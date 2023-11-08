@@ -4,6 +4,7 @@ go 1.21.1
 
 require (
 	cloud.google.com/go/firestore v1.14.0
+	cloud.google.com/go/logging v1.8.1
 	github.com/gorilla/mux v1.8.0
 	google.golang.org/api v0.149.0
 )

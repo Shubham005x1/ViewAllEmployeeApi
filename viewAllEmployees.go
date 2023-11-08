@@ -9,6 +9,7 @@ import (
 	"sync"
 
 	"cloud.google.com/go/firestore"
+	"cloud.google.com/go/logging"
 	"github.com/gorilla/mux"
 	"google.golang.org/api/iterator"
 )
@@ -26,6 +27,7 @@ type Employee struct {
 var (
 	client     *firestore.Client
 	onceClient sync.Once
+	logClient  *logging.Client
 )
 
 func InitializeFirestore() {
@@ -50,6 +52,17 @@ func main() {
 func ViewAllEmployees(w http.ResponseWriter, r *http.Request) {
 	ctx := context.Background()
 	InitializeFirestore()
+	// Initialize the Logging client for logging events.
+	logClient, _ = logging.NewClient(ctx, "takeoff-task-3")
+
+	// Ensure the logClient is closed after the function completes.
+	defer logClient.Close()
+	// Create a logger for this function.
+	logger := logClient.Logger("my-log")
+	logger.Log(logging.Entry{
+		Payload:  "ViewAllEmployees function started",
+		Severity: logging.Info,
+	})
 
 	iter := client.Collection("employees").Documents(ctx)
 	defer iter.Stop()
